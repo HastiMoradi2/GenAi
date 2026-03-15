@@ -22,7 +22,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+api_key = os.getenv("ANTHROPIC_API_KEY")
+
+if not api_key:
+    print("❌ ERROR: No API Key found in .env file!")
+else:
+    print(f"✅ API Key loaded: {api_key[:10]}...")
+
+client = anthropic.Anthropic(api_key=api_key)
 MODEL = "claude-sonnet-4-6"
 
 
