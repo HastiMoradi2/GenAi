@@ -1,15 +1,15 @@
 /* ── Design tokens ── */
 :root {
-  --bg: #FBF9FF;
+  --bg: #F4F8FF;
   --surface: #FFFFFF;
-  --text: #1C1730;
-  --muted: #6B6080;
-  --faint: #C2BAD8;
-  --border: #EAE4F6;
-  --lav: #C4B4F0;
-  --lav-light: #F0EBFE;
-  --lav-deep: #6A4ED4;
-  --lav-mid: #9878E4;
+  --text: #1A1F2E;
+  --muted: #56677A;
+  --faint: #ADC4DA;
+  --border: #D2E5F4;
+  --lav: #8BBDE8;
+  --lav-light: #E2F0FB;
+  --lav-deep: #2070B4;
+  --lav-mid: #5298CC;
   --mint: #8ED8C2;
   --mint-light: #E2F6F0;
   --mint-deep: #178068;
@@ -25,8 +25,8 @@
   --sky: #90CCF0;
   --sky-light: #E4F2FC;
   --sky-deep: #1660A8;
-  --shadow: 0 2px 16px rgba(100, 78, 212, 0.08);
-  --shadow-lg: 0 8px 36px rgba(100, 78, 212, 0.14);
+  --shadow: 0 2px 16px rgba(30, 90, 160, 0.08);
+  --shadow-lg: 0 8px 36px rgba(30, 90, 160, 0.14);
   --radius: 18px;
   --radius-sm: 12px;
 }
@@ -36,22 +36,43 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
+  background: #FAF6ED;
   color: var(--text);
   min-height: 100vh;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
+}
+
+/* ── Fixed aurora behind everything ── */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #FAF6ED;
+  pointer-events: none;
+}
+.aurora-bg .aurora-container {
+  position: absolute;
+  inset: 0;
 }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-thumb { background: var(--lav); border-radius: 10px; }
 
 /* ── App shell ── */
-.app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
 
 /* ── Top nav ── */
 .topnav {
-  background: var(--surface);
-  border-bottom: 1.5px solid var(--border);
+  background: rgba(250, 246, 237, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.55);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -69,20 +90,25 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 0;
+  padding: 14px 0;
   flex-shrink: 0;
 }
-.brand-icon { font-size: 22px; }
+.brand-icon { font-size: 24px; }
 .brand-name {
   font-family: 'Instrument Serif', serif;
-  font-size: 22px;
+  font-size: 38px;
   color: #3A8C4E;
+  background: var(--lav-light);
+  border: none;
+  padding: 2px 12px 4px;
+  border-radius: 10px;
+  line-height: 1.1;
 }
 .brand-tag {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   background: var(--lav-light);
-  padding: 2px 8px;
+  padding: 2px 10px;
   border-radius: 20px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -96,12 +122,12 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 10px 15px;
   border: none;
   background: transparent;
   color: var(--muted);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -122,23 +148,34 @@ body {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 32px 24px 64px;
+  padding: 28px 24px 52px;
 }
 
 /* ── Shared typography ── */
 .page-title {
   font-family: 'Instrument Serif', serif;
-  font-size: 28px;
+  font-size: 34px;
   color: var(--text);
   margin-bottom: 6px;
 }
 .page-subtitle {
   color: var(--muted);
-  font-size: 14px;
-  margin-bottom: 28px;
+  font-size: 16px;
+  margin-bottom: 24px;
 }
+.page-header {
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius);
+  padding: 22px 26px 18px;
+  margin-bottom: 24px;
+}
+.page-header .page-title { margin-bottom: 4px; }
+.page-header .page-subtitle { margin-bottom: 0; color: rgba(255, 255, 255, 0.88); }
 .section-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -148,11 +185,13 @@ body {
 
 /* ── Cards ── */
 .card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radius);
   padding: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 24px rgba(0, 40, 120, 0.07);
   position: relative;
   overflow: hidden;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
@@ -167,7 +206,7 @@ body {
   border-radius: inherit;
   background: radial-gradient(
     220px circle at var(--mx, 50%) var(--my, 50%),
-    rgba(132, 0, 255, 0.22),
+    rgba(30, 100, 200, 0.2),
     transparent 70%
   );
   opacity: 0;
@@ -177,9 +216,9 @@ body {
 }
 .card:hover::before { opacity: 1; }
 .card:hover {
-  border-color: rgba(132, 0, 255, 0.28);
-  box-shadow: 0 0 0 1.5px rgba(132, 0, 255, 0.18),
-              0 8px 36px rgba(100, 78, 212, 0.16);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.5),
+              0 8px 36px rgba(0, 40, 120, 0.12);
 }
 /* keep card children above the glow layer */
 .card > * { position: relative; z-index: 1; }
@@ -188,7 +227,7 @@ body {
 .magic-ripple {
   position: absolute;
   border-radius: 50%;
-  background: rgba(132, 0, 255, 0.12);
+  background: rgba(30, 100, 200, 0.1);
   transform: scale(0);
   animation: magic-ripple 0.65s ease-out forwards;
   pointer-events: none;
@@ -204,7 +243,7 @@ body {
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(132, 0, 255, 0.055) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(30, 100, 200, 0.05) 0%, transparent 70%);
   pointer-events: none;
   transform: translate(-50%, -50%);
   z-index: 9990;
@@ -217,10 +256,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 13px 26px;
   border-radius: var(--radius-sm);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -231,7 +270,7 @@ body {
   background: var(--lav-deep);
   color: #fff;
 }
-.btn-primary:hover:not(:disabled) { background: #5b40c0; }
+.btn-primary:hover:not(:disabled) { background: #185e9c; }
 .btn-secondary {
   background: var(--lav-light);
   color: var(--lav-deep);
@@ -257,7 +296,7 @@ body {
   gap: 4px;
   padding: 3px 10px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 .badge-detected { background: var(--mint-light); color: var(--mint-deep); }
@@ -292,7 +331,7 @@ body {
   border: 1.5px solid var(--border);
   background: var(--surface);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--muted);
   cursor: pointer;
@@ -325,8 +364,8 @@ body {
 .criteria-card.detected { border-color: var(--mint); background: var(--mint-light); }
 .criteria-card.possible { border-color: var(--butter); background: var(--butter-light); }
 .criteria-card-icon { font-size: 28px; margin-bottom: 8px; }
-.criteria-card-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
-.criteria-card-sub { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.criteria-card-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+.criteria-card-sub { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
 
 /* ── Strength bar ── */
 .strength-section { margin-bottom: 24px; }
@@ -341,7 +380,7 @@ body {
   font-size: 32px;
   color: var(--lav-deep);
 }
-.strength-label { font-size: 13px; color: var(--muted); }
+.strength-label { font-size: 14px; color: var(--muted); }
 
 /* ── Calendar (CycleTracker) ── */
 .cal-nav {
@@ -350,7 +389,7 @@ body {
   justify-content: space-between;
   margin-bottom: 16px;
 }
-.cal-nav-title { font-weight: 700; font-size: 16px; }
+.cal-nav-title { font-weight: 700; font-size: 17px; }
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -359,7 +398,7 @@ body {
 }
 .cal-day-label {
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--muted);
   padding: 4px 0 8px;
@@ -371,7 +410,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.12s ease;
@@ -392,7 +431,7 @@ body {
   border-radius: 99px;
   border: 1.5px solid var(--border);
   background: var(--surface);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--muted);
   cursor: pointer;
@@ -428,8 +467,8 @@ body {
 .suggestion-icon.stress    { background: var(--peach-light); }
 .suggestion-icon.supplements { background: var(--butter-light); }
 .suggestion-icon.tracking  { background: var(--rose-light); }
-.suggestion-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-.suggestion-tip   { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.suggestion-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.suggestion-tip   { font-size: 14px; color: var(--muted); line-height: 1.5; }
 
 /* ── Health metric cards ── */
 .metric-grid {
@@ -447,13 +486,13 @@ body {
 }
 .metric-icon { font-size: 26px; margin-bottom: 8px; }
 .metric-value { font-family: 'Instrument Serif', serif; font-size: 26px; color: var(--text); }
-.metric-unit  { font-size: 12px; color: var(--muted); }
-.metric-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
-.metric-note  { font-size: 11px; color: var(--peach-deep); margin-top: 4px; font-weight: 600; }
+.metric-unit  { font-size: 13px; color: var(--muted); }
+.metric-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.metric-note  { font-size: 12px; color: var(--peach-deep); margin-top: 4px; font-weight: 600; }
 
 /* ── Report ── */
 .report-body {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.8;
   white-space: pre-wrap;
 }
@@ -486,9 +525,9 @@ body {
 }
 .doctor-card:hover { border-color: var(--lav); }
 .doctor-card.selected { border-color: var(--lav-deep); background: var(--lav-light); }
-.doctor-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-.doctor-meta { font-size: 12px; color: var(--muted); }
-.doctor-rating { font-size: 13px; font-weight: 600; color: var(--butter-deep); }
+.doctor-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.doctor-meta { font-size: 13px; color: var(--muted); }
+.doctor-rating { font-size: 14px; font-weight: 600; color: var(--butter-deep); }
 .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
 .slot-btn {
   padding: 10px;
@@ -496,7 +535,7 @@ body {
   border: 1.5px solid var(--border);
   background: var(--surface);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   text-align: center;
@@ -520,7 +559,7 @@ body {
 
 /* ── Letter ── */
 .letter-body {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.9;
   white-space: pre-wrap;
   font-family: 'Instrument Serif', serif;
@@ -551,9 +590,9 @@ body {
   color: var(--lav-deep);
   flex-shrink: 0;
 }
-.specialist-name { font-weight: 700; font-size: 14px; }
-.specialist-meta { font-size: 12px; color: var(--muted); }
-.specialist-hospital { font-size: 12px; color: var(--lav-deep); font-weight: 600; }
+.specialist-name { font-weight: 700; font-size: 15px; }
+.specialist-meta { font-size: 13px; color: var(--muted); }
+.specialist-hospital { font-size: 13px; color: var(--lav-deep); font-weight: 600; }
 
 /* ── Step list (escalation guide) ── */
 .step-list { display: flex; flex-direction: column; gap: 12px; }
@@ -579,8 +618,8 @@ body {
   justify-content: center;
   flex-shrink: 0;
 }
-.step-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-.step-desc { font-size: 13px; color: var(--muted); }
+.step-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--muted); }
 
 /* ── Textarea / Input ── */
 textarea, input[type="text"], input[type="date"] {
@@ -589,7 +628,7 @@ textarea, input[type="text"], input[type="date"] {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   background: var(--surface);
   color: var(--text);
   transition: border-color 0.15s;
@@ -611,7 +650,7 @@ textarea:focus, input[type="text"]:focus, input[type="date"]:focus {
   animation: spin 0.7s linear infinite;
 }
 .spinner.dark {
-  border-color: rgba(106, 78, 212, 0.2);
+  border-color: rgba(30, 100, 180, 0.2);
   border-top-color: var(--lav-deep);
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -625,7 +664,7 @@ textarea:focus, input[type="text"]:focus, input[type="date"]:focus {
   gap: 16px;
   padding: 48px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* ── Empty state ── */
@@ -635,8 +674,8 @@ textarea:focus, input[type="text"]:focus, input[type="date"]:focus {
   color: var(--muted);
 }
 .empty-state-icon { font-size: 40px; margin-bottom: 14px; }
-.empty-state-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; color: var(--text); }
-.empty-state-desc { font-size: 13px; max-width: 300px; margin: 0 auto; }
+.empty-state-title { font-weight: 700; font-size: 17px; margin-bottom: 6px; color: var(--text); }
+.empty-state-desc { font-size: 14px; max-width: 300px; margin: 0 auto; }
 
 /* ── Toast ── */
 .toast-container {
@@ -655,7 +694,7 @@ textarea:focus, input[type="text"]:focus, input[type="date"]:focus {
   gap: 12px;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   box-shadow: var(--shadow-lg);
@@ -682,7 +721,7 @@ textarea:focus, input[type="text"]:focus, input[type="date"]:focus {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 .flag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lav-deep); flex-shrink: 0; margin-top: 5px; }
@@ -696,6 +735,6 @@ textarea:focus, input[type="text"]:focus, input[type="date"]:focus {
   border-radius: 99px;
   background: var(--mint-light);
   color: var(--mint-deep);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }

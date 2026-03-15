@@ -89,8 +89,10 @@ export default function CycleTracker({ showToast }) {
 
   return (
     <div>
-      <h1 className="page-title">Cycle Tracker</h1>
-      <p className="page-subtitle">Tap days to log your period. Select a day to track daily symptoms.</p>
+      <div className="page-header">
+        <h1 className="page-title">Cycle Tracker</h1>
+        <p className="page-subtitle">Tap days to log your period. Select a day to track daily symptoms.</p>
+      </div>
 
       <div className="two-col" style={{ alignItems: 'start' }}>
         {/* ── Left: calendar ── */}

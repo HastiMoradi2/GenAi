@@ -80,35 +80,44 @@ export default function BookGP({ showToast }) {
   }
 
   function searchDoctors() {
-    if (!window.google?.maps || !mapInstance.current) {
-      showToast('Google Maps is still loading — please wait a moment', 'error')
-      return
-    }
     setLoadingMap(true)
     setDoctors([])
     clearMarkers()
 
-    // Try to use user's location first
-    const doSearch = (center) => {
-      mapInstance.current.setCenter(center)
-      const service = new window.google.maps.places.PlacesService(mapInstance.current)
-      service.textSearch(
-        { query: 'PCOS doctor gynecologist endocrinologist', location: center, radius: 15000 },
-        (results, status) => {
+    const doSearch = async (lat, lng) => {
+      try {
+        const res = await fetch('/api/places/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lat,
+            lng,
+            query: 'PCOS gynecologist endocrinologist women health clinic',
+            radius: 15000
+          })
+        })
+        const data = await res.json()
+        const results = data.results || []
+
+        if (results.length === 0) {
+          showToast('No results found nearby.', 'error')
           setLoadingMap(false)
-          if (status !== window.google.maps.places.PlacesServiceStatus.OK || !results) {
-            showToast('No results found. Try enabling location access.', 'error')
-            return
-          }
-          const top = results.slice(0, 8)
-          setDoctors(top)
+          return
+        }
+
+        setDoctors(results)
+
+        // Update map center
+        if (mapInstance.current) {
+          mapInstance.current.setCenter({ lat, lng })
 
           // Add markers
-          top.forEach((place, i) => {
-            const loc = place.geometry?.location
-            if (!loc) return
+          const bounds = new window.google.maps.LatLngBounds()
+          results.forEach((place, i) => {
+            if (!place.lat || !place.lng) return
+            const pos = { lat: place.lat, lng: place.lng }
             const marker = new window.google.maps.Marker({
-              position: loc,
+              position: pos,
               map: mapInstance.current,
               title: place.name,
               label: { text: String(i + 1), color: '#fff', fontWeight: 'bold', fontSize: '12px' },
@@ -121,28 +130,28 @@ export default function BookGP({ showToast }) {
                 strokeWeight: 2,
               },
             })
-            marker.addListener('click', () => setSelectedDoctor(top[i]))
+            marker.addListener('click', () => setSelectedDoctor(results[i]))
             markers.current.push(marker)
+            bounds.extend(pos)
           })
-
-          // Fit map to markers
-          const bounds = new window.google.maps.LatLngBounds()
-          top.forEach(p => { if (p.geometry?.location) bounds.extend(p.geometry.location) })
           mapInstance.current.fitBounds(bounds)
         }
-      )
+      } catch (e) {
+        showToast('Search failed: ' + e.message, 'error')
+      } finally {
+        setLoadingMap(false)
+      }
     }
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => doSearch({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => doSearch({ lat: 43.651070, lng: -79.347015 })
+        pos => doSearch(pos.coords.latitude, pos.coords.longitude),
+        () => doSearch(43.651070, -79.347015)
       )
     } else {
-      doSearch({ lat: 43.651070, lng: -79.347015 })
+      doSearch(43.651070, -79.347015)
     }
   }
-
   function connectCalendar() {
     window.location.href = '/api/calendar/auth'
   }
@@ -280,7 +289,7 @@ export default function BookGP({ showToast }) {
                     }}>{i + 1}</span>
                     <div className="doctor-name">{doc.name}</div>
                   </div>
-                  <div className="doctor-meta">{doc.formatted_address || doc.vicinity || ''}</div>
+                  <div className="doctor-meta">{doc.address || ''}</div>
                   {doc.opening_hours?.open_now !== undefined && (
                     <div style={{ fontSize: 11, marginTop: 4, color: doc.opening_hours.open_now ? 'var(--mint-deep)' : 'var(--peach-deep)', fontWeight: 600 }}>
                       {doc.opening_hours.open_now ? '● Open now' : '● Closed'}
@@ -309,8 +318,8 @@ export default function BookGP({ showToast }) {
           <div className="section-label">Selected</div>
           <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{selectedDoctor.name}</div>
           <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>
-            {selectedDoctor.formatted_address || selectedDoctor.vicinity || ''}
-          </div>
+  {selectedDoctor.address || ''}
+</div>
 
           <div className="section-label">Date</div>
           <input

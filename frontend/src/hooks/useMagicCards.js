@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import gsap from 'gsap'
 
-export function useMagicCards({ particleCount = 12, spotlightRadius = 400 } = {}) {
+export function useMagicCards({ particleCount = 12 } = {}) {
   useEffect(() => {
     /* ── Spotlight ── */
     const spotlight = document.createElement('div')
@@ -49,7 +49,7 @@ export function useMagicCards({ particleCount = 12, spotlightRadius = 400 } = {}
       for (let i = 0; i < particleCount; i++) {
         const p = document.createElement('div')
         const size = Math.random() * 4 + 2
-        const colors = ['132,0,255', '106,78,212', '156,120,228', '200,180,255']
+        const colors = ['30,100,200', '50,140,220', '82,152,204', '139,189,232']
         const color = colors[Math.floor(Math.random() * colors.length)]
         p.style.cssText = `
           position:fixed;

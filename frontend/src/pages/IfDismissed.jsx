@@ -66,8 +66,10 @@ export default function IfDismissed({ showToast }) {
 
   return (
     <div>
-      <h1 className="page-title">If Your Doctor Dismisses You</h1>
-      <p className="page-subtitle">You deserve to be taken seriously. Here's your advocacy toolkit.</p>
+      <div className="page-header">
+        <h1 className="page-title">If Your Doctor Dismisses You</h1>
+        <p className="page-subtitle">You deserve to be taken seriously. Here's your advocacy toolkit.</p>
+      </div>
 
       <div className="two-col" style={{ alignItems: 'start' }}>
         {/* ── Left column ── */}

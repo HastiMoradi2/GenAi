@@ -31,8 +31,10 @@ export default function HealthData({ showToast }) {
 
   return (
     <div>
-      <h1 className="page-title">Health Data</h1>
-      <p className="page-subtitle">Passive health metrics interpreted through a PCOS clinical lens.</p>
+      <div className="page-header">
+        <h1 className="page-title">Health Data</h1>
+        <p className="page-subtitle">Passive health metrics interpreted through a PCOS clinical lens.</p>
+      </div>
 
       {/* ── Apple Health ── */}
       <div className="card" style={{ marginBottom: 20 }}>

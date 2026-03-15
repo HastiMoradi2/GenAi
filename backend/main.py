@@ -21,8 +21,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+api_key = os.getenv("ANTHROPIC_API_KEY")
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+if not api_key:
+    print("❌ ERROR: No API Key found in .env file!")
+else:
+    print(f"✅ API Key loaded: {api_key[:10]}...")
+
+client = anthropic.Anthropic(api_key=api_key)
 MODEL = "claude-sonnet-4-6"
 
 
@@ -445,32 +451,42 @@ async def places_search(req: PlacesSearchRequest):
         raise HTTPException(status_code=500, detail="Google Places API key not configured")
 
     async with httpx.AsyncClient() as http:
-        resp = await http.get(
-            "https://maps.googleapis.com/maps/api/place/textsearch/json",
-            params={
-                "query": req.query,
-                "location": f"{req.lat},{req.lng}",
-                "radius": req.radius,
-                "key": api_key,
+        resp = await http.post(
+            "https://places.googleapis.com/v1/places:searchText",
+            headers={
+                "Content-Type": "application/json",
+                "X-Goog-Api-Key": api_key,
+                "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.id,places.currentOpeningHours,places.types",
             },
+            json={
+                "textQuery": req.query,
+                "locationBias": {
+                    "circle": {
+                        "center": {"latitude": req.lat, "longitude": req.lng},
+                        "radius": float(req.radius),
+                    }
+                },
+                "maxResultCount": 8,
+            }
         )
 
     if resp.status_code != 200:
-        raise HTTPException(status_code=502, detail="Google Places API error")
+        raise HTTPException(status_code=502, detail=f"Google Places API error: {resp.text}")
 
     results = []
-    for place in resp.json().get("results", [])[:8]:
-        loc = place.get("geometry", {}).get("location", {})
-        plat, plng = loc.get("lat", req.lat), loc.get("lng", req.lng)
+    for place in resp.json().get("places", []):
+        loc = place.get("location", {})
+        plat = loc.get("latitude", req.lat)
+        plng = loc.get("longitude", req.lng)
         results.append({
-            "place_id": place.get("place_id"),
-            "name": place.get("name"),
-            "address": place.get("formatted_address", place.get("vicinity", "")),
+            "place_id": place.get("id"),
+            "name": place.get("displayName", {}).get("text", ""),
+            "address": place.get("formattedAddress", ""),
             "lat": plat,
             "lng": plng,
             "rating": place.get("rating"),
-            "user_ratings_total": place.get("user_ratings_total"),
-            "open_now": place.get("opening_hours", {}).get("open_now"),
+            "user_ratings_total": place.get("userRatingCount"),
+            "open_now": place.get("currentOpeningHours", {}).get("openNow"),
             "types": place.get("types", []),
             "distance_km": _haversine(req.lat, req.lng, plat, plng),
         })
@@ -487,55 +503,74 @@ def agent_rank(req: AgentRankRequest):
     symptoms = case.get("symptoms", [])
     strength = case.get("caseStrength", 0)
 
-    prompt = f"""You are a PCOS care coordinator matching a patient to appropriate nearby providers.
+# Simplify places to just what Claude needs
+    simplified = [
+        {
+            "place_id": p.get("place_id"),
+            "name": p.get("name"),
+            "address": p.get("address", ""),
+            "types": p.get("types", []),
+            "rating": p.get("rating"),
+        }
+        for p in req.places[:16]
+    ]
 
-Patient profile:
-- Case strength: {strength}/100
-- Rotterdam criteria — cycle: {criteria.get('cycle', 'unknown')}, androgen: {criteria.get('androgen', 'unknown')}, ovary: {criteria.get('ovary', 'unknown')}
-- Symptoms: {', '.join(symptoms) if symptoms else 'not specified'}
+    prompt = f"""You are a PCOS care coordinator. Classify and rank these nearby places for a PCOS patient.
 
-Nearby providers found via Google Places:
-{json.dumps(req.places[:24], indent=2)}
+Patient: case strength {strength}/100, symptoms: {', '.join(symptoms[:6]) if symptoms else 'not specified'}
 
-Return JSON only — no other text. Use exactly this structure:
+Places:
+{json.dumps(simplified, indent=2)}
+
+Return ONLY a JSON object, no explanation, no markdown:
 {{
   "doctors": [
-    {{
-      "place_id": "<from input>",
-      "rank": 1,
-      "specialty_match": "<GP|Endocrinologist|Gynecologist>",
-      "relevance_reason": "<one sentence: why this provider suits this patient>",
-      "priority": "<high|medium|low>"
-    }}
+    {{"place_id": "...", "rank": 1, "specialty_match": "GP", "relevance_reason": "one sentence", "priority": "high"}}
   ],
   "labs": [
-    {{
-      "place_id": "<from input>",
-      "rank": 1,
-      "relevance_reason": "<one sentence: why this lab is appropriate>",
-      "priority": "<high|medium|low>"
-    }}
+    {{"place_id": "...", "rank": 1, "relevance_reason": "one sentence", "priority": "medium"}}
   ],
-  "prioritized_tests": ["<test1>", "<test2>", "<test3>", "<test4>", "<test5>"]
+  "prioritized_tests": ["Testosterone (Total + Free)", "Fasting Insulin", "LH/FSH Ratio", "AMH", "HbA1c"]
 }}
 
 Rules:
-- Classify each place as a doctor/clinic (doctors array) or diagnostic lab (labs array). Omit places that fit neither.
-- Rank each group separately by relevance to this patient's specific symptom profile.
-- prioritized_tests: exactly 5 tests. Always include testosterone (total + free) and fasting insulin. Add LH/FSH if cycle is detected or possible. Add AMH if ovary is detected or possible. Fill remaining slots with HbA1c, thyroid panel (TSH), or vitamin D 25-OH as appropriate.
-- Keep relevance_reason to one clear, specific sentence."""
+- Put clinics/doctors in doctors array, diagnostic labs in labs array
+- specialty_match must be one of: GP, Endocrinologist, Gynecologist
+- Return all places that are relevant, skip ones that are clearly unrelated (pharmacies, restaurants etc)
+- Return raw JSON only, absolutely no other text"""
 
     message = client.messages.create(
         model=MODEL,
-        max_tokens=1500,
+        max_tokens=3000,
         messages=[{"role": "user", "content": prompt}],
     )
 
+    
     text = _strip_json_fences(message.content[0].text)
+    print("=== AGENT RANK RESPONSE ===")
+    print(text)
+    print("=== END ===")
     try:
         return json.loads(text)
     except Exception:
-        raise HTTPException(status_code=500, detail="Failed to parse AI ranking response")
+        import re
+        match = re.search(r'\{.*\}', text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group())
+            except Exception:
+                pass
+        return {
+            "doctors": [],
+            "labs": [],
+            "prioritized_tests": [
+                "Testosterone (Total + Free)",
+                "Fasting Insulin",
+                "LH/FSH Ratio",
+                "AMH (Anti-Mullerian Hormone)",
+                "HbA1c"
+            ]
+        }
 
 
 # ── CALENDAR FREE SLOTS ────────────────────────────────────────────────────────

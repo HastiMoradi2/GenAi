@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useToast } from './hooks/useToast'
 import { useMagicCards } from './hooks/useMagicCards'
+import Aurora from './components/Aurora'
 import Symptoms from './pages/Symptoms'
 import CycleTracker from './pages/CycleTracker'
 import HealthData from './pages/HealthData'
@@ -20,7 +21,7 @@ const TABS = [
 export default function App() {
   const [activeTab, setActiveTab] = useState('symptoms')
   const { toasts, showToast, removeToast } = useToast()
-  useMagicCards({ particleCount: 12, spotlightRadius: 400 })
+  useMagicCards({ particleCount: 12 })
 
   const renderPage = () => {
     switch (activeTab) {
@@ -35,6 +36,17 @@ export default function App() {
   }
 
   return (
+    <>
+      {/* ── Global aurora background (sibling of app-shell, never inside its stacking context) ── */}
+      <div className="aurora-bg">
+        <Aurora
+          colorStops={['#1133ee', '#6633dd', '#cc44ff']}
+          blend={0.65}
+          amplitude={1.3}
+          speed={0.6}
+        />
+      </div>
+
     <div className="app-shell">
       {/* ── Top nav ── */}
       <header className="topnav">
@@ -72,5 +84,6 @@ export default function App() {
         ))}
       </div>
     </div>
+    </>
   )
 }

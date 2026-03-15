@@ -165,6 +165,7 @@ export default function FindCare({ showToast }) {
     step('rank', 'active')
     try {
       const ranked = await api.agentRank(caseState, allPlaces)
+      
       const placeMap = Object.fromEntries(allPlaces.map(p => [p.place_id, p]))
       setDoctors(
         (ranked.doctors || []).map(r => ({ ...placeMap[r.place_id], ...r })).filter(d => d.name)
@@ -261,7 +262,9 @@ export default function FindCare({ showToast }) {
   if (booking) {
     return (
       <div>
-        <h1 className="page-title">Find Care</h1>
+        <div className="page-header" style={{ marginBottom: 20 }}>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>Find Care</h1>
+        </div>
         <div className="card" style={{ textAlign: 'center', padding: 48 }}>
           <div style={{
             fontSize: 28, fontWeight: 700, color: 'var(--lav-deep)',
@@ -307,10 +310,12 @@ export default function FindCare({ showToast }) {
   if (phase === 'idle') {
     return (
       <div>
-        <h1 className="page-title">Find Care</h1>
-        <p className="page-subtitle">
-          Clover will search for nearby specialists and labs, rank them for your case, and book a slot in your calendar.
-        </p>
+        <div className="page-header">
+          <h1 className="page-title">Find Care</h1>
+          <p className="page-subtitle">
+            Clover will search for nearby specialists and labs, rank them for your case, and book a slot in your calendar.
+          </p>
+        </div>
 
         <div className="two-col" style={{ alignItems: 'start' }}>
           {/* Agent description + trigger */}
@@ -420,7 +425,9 @@ export default function FindCare({ showToast }) {
   if (phase === 'running') {
     return (
       <div>
-        <h1 className="page-title">Find Care</h1>
+        <div className="page-header" style={{ marginBottom: 20 }}>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>Find Care</h1>
+        </div>
         <div className="card" style={{ maxWidth: 440 }}>
           <div className="section-label" style={{ marginBottom: 20 }}>Working on it…</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -460,7 +467,9 @@ export default function FindCare({ showToast }) {
   if (phase === 'error') {
     return (
       <div>
-        <h1 className="page-title">Find Care</h1>
+        <div className="page-header" style={{ marginBottom: 20 }}>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>Find Care</h1>
+        </div>
         <div className="card" style={{ maxWidth: 440 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--peach-deep)', marginBottom: 8 }}>
             Something went wrong
@@ -479,13 +488,13 @@ export default function FindCare({ showToast }) {
   // ─────────────────────────────────────────────────────────────────────────────
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-        <h1 className="page-title" style={{ marginBottom: 0 }}>Find Care</h1>
+      <div className="page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 4 }}>Find Care</h1>
+          <p className="page-subtitle">Ranked for your case profile. Select a provider to see available calendar slots.</p>
+        </div>
         <button className="btn btn-ghost btn-sm" onClick={runAgent}>Re-run</button>
       </div>
-      <p className="page-subtitle">
-        Ranked for your case profile. Select a provider to see available calendar slots.
-      </p>
 
       <div className="two-col" style={{ alignItems: 'start' }}>
 
