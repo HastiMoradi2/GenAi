@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useToast } from './hooks/useToast'
+import { useMagicCards } from './hooks/useMagicCards'
 import Symptoms from './pages/Symptoms'
 import CycleTracker from './pages/CycleTracker'
 import HealthData from './pages/HealthData'
@@ -19,6 +20,7 @@ const TABS = [
 export default function App() {
   const [activeTab, setActiveTab] = useState('symptoms')
   const { toasts, showToast, removeToast } = useToast()
+  useMagicCards({ particleCount: 12, spotlightRadius: 400 })
 
   const renderPage = () => {
     switch (activeTab) {

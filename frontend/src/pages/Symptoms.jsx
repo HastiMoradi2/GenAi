@@ -3,21 +3,60 @@ import { api } from '../lib/api'
 
 const SLIDES = [
   {
-    id: 'skin',
-    title: 'Skin & Hair',
-    subtitle: 'Hormonal shifts often show up here first.',
+    id: 'cycle',
+    title: 'Period & Cycle',
+    subtitle: 'Your cycle is one of the clearest windows into hormonal health.',
     symptoms: [
-      'Persistent acne', 'Oily skin', 'Facial hair',
-      'Hair thinning', 'Body hair changes', 'Scalp hair loss',
+      'Periods more than 35 days apart',
+      'Fewer than 8 periods a year',
+      'No period for 3+ months',
+      'Unpredictable cycle length',
+      'Very heavy bleeding',
+      'Bleeding for more than 7 days',
+      'Spotting between periods',
+      'Severe cramping',
+      'Large clots during period',
+      'Very light or short periods',
+      'First period after age 15',
+      'Cycle getting more irregular over time',
     ],
   },
   {
-    id: 'cycle',
-    title: 'Cycle & Fertility',
-    subtitle: 'Your cycle is one of the clearest windows into hormonal health.',
+    id: 'hair',
+    title: 'Hair Loss & Facial Hair',
+    subtitle: 'Androgen-driven hair changes are a key diagnostic signal.',
     symptoms: [
-      'Irregular periods', 'Missed periods', 'Heavy bleeding',
-      'Spotting between periods', 'Long cycles (>35 days)',
+      'Thinning hair at the crown',
+      'Widening part line',
+      'Receding hairline',
+      'Excessive daily hair shedding',
+      'Hair thinning at the temples',
+      'Coarser hair texture',
+      'Facial hair on chin or upper lip',
+      'Hair on chest or stomach',
+      'Hair on inner thighs or lower back',
+      'Hair on toes or fingers',
+      'Sideburn hair growth',
+      'Eyebrow thinning (outer thirds)',
+    ],
+  },
+  {
+    id: 'skin',
+    title: 'Skin & Acne',
+    subtitle: 'Hormonal imbalances often surface on the skin first.',
+    symptoms: [
+      'Jawline or chin acne',
+      'Acne that does not respond to treatment',
+      'Back or chest acne',
+      'Acne that worsens around your period',
+      'Persistently oily skin',
+      'Oily scalp',
+      'Dark velvety patches on neck or armpits',
+      'Dark skin in groin or inner thighs',
+      'Small skin tags on neck or underarms',
+      'Rough bumps on upper arms or thighs',
+      'Skin that scars or marks easily',
+      'Redness or flushing',
     ],
   },
   {
@@ -25,17 +64,141 @@ const SLIDES = [
     title: 'Weight & Metabolism',
     subtitle: "PCOS can make your body feel like it's working against you — that's not your fault.",
     symptoms: [
-      'Weight gain', 'Difficulty losing weight', 'Sugar cravings',
-      'Bloating', 'Skin darkening', 'Skin tags',
+      'Weight gain mostly around the abdomen',
+      'Difficulty losing weight despite effort',
+      'Strong cravings for sugar or carbs',
+      'Bloating after eating',
+      'Feeling very full quickly',
+      'Feeling shaky or faint between meals',
+      'Excessive thirst',
+      'Frequent urination',
+      'Slow metabolism',
+      'Weight that fluctuates a lot',
+      'Difficulty gaining muscle',
+      'Feeling cold often',
+    ],
+  },
+  {
+    id: 'fatigue',
+    title: 'Fatigue & Energy',
+    subtitle: 'Insulin resistance and hormonal shifts drain energy in very specific ways.',
+    symptoms: [
+      'Persistent tiredness not explained by sleep',
+      'Energy crash after eating',
+      'Brain fog or mental cloudiness',
+      'Difficulty concentrating',
+      'Memory lapses',
+      'Low motivation most days',
+      'Hard to wake up in the morning',
+      'Afternoon energy slump',
+      'Feeling exhausted after light activity',
+      'Relying on caffeine to function',
+      'Feeling wired but tired',
+      'Low stamina during exercise',
     ],
   },
   {
     id: 'mood',
-    title: 'Mood & Energy',
+    title: 'Mood & Mental Health',
     subtitle: 'Hormonal imbalances affect far more than most people realise.',
     symptoms: [
-      'Fatigue', 'Mood swings', 'Anxiety',
-      'Brain fog', 'Sleep problems', 'Low libido', 'Pelvic pain',
+      'Persistent low mood',
+      'Anxiety or constant worry',
+      'Mood swings tied to your cycle',
+      'Irritability',
+      'Feeling overwhelmed easily',
+      'Low self-esteem related to symptoms',
+      'Loss of interest in things you enjoy',
+      'Emotional sensitivity',
+      'Difficulty managing stress',
+      'Feeling detached or numb',
+      'Panic attacks',
+      'Negative body image',
+    ],
+  },
+  {
+    id: 'sleep',
+    title: 'Sleep',
+    subtitle: 'Poor sleep and PCOS reinforce each other — both deserve attention.',
+    symptoms: [
+      'Trouble falling asleep',
+      'Waking up during the night',
+      'Waking up tired even after a full night',
+      'Snoring or gasping during sleep',
+      'Excessive daytime sleepiness',
+      'Restless legs at night',
+      'Night sweats',
+      'Vivid or disturbing dreams',
+      'Needing more than 9 hours to feel rested',
+      'Sleep that varies a lot by cycle phase',
+    ],
+  },
+  {
+    id: 'pelvic',
+    title: 'Pelvic Pain & Reproductive',
+    subtitle: 'Structural and reproductive symptoms that matter for diagnosis.',
+    symptoms: [
+      'Pelvic pressure or aching',
+      'Pain during sex',
+      'Pain during ovulation',
+      'Bloating or pressure mid-cycle',
+      'Difficulty getting pregnant',
+      'Recurrent miscarriage',
+      'Ovarian cysts (previously diagnosed)',
+      'One-sided pelvic pain',
+      'Pain that radiates to lower back',
+      'Pelvic pain unrelated to your period',
+    ],
+  },
+  {
+    id: 'hormonal',
+    title: 'Hormonal Signs',
+    subtitle: 'Subtler signs of hormonal dysregulation worth documenting.',
+    symptoms: [
+      'Increased body odour',
+      'Breast tenderness',
+      'Hot flashes or sudden heat',
+      'Low sex drive',
+      'Vaginal dryness',
+      'Deepening voice',
+      'Feeling more oily or sweaty than usual',
+      'Symptoms that clearly shift with your cycle',
+      'Cold intolerance — always feeling cold',
+      'Sensitivity to temperature changes',
+    ],
+  },
+  {
+    id: 'gut',
+    title: 'Gut & Inflammation',
+    subtitle: 'The gut-hormone connection is well-established in PCOS research.',
+    symptoms: [
+      'Chronic bloating',
+      'Constipation or very irregular bowel',
+      'Nausea around your period',
+      'Food sensitivities or intolerances',
+      'Joint pain or stiffness',
+      'Frequent headaches',
+      'Headaches tied to your cycle',
+      'Puffy face or swollen hands',
+      'Slow digestion',
+      "Feeling inflamed or 'off' without a clear cause",
+    ],
+  },
+  {
+    id: 'labs',
+    title: 'Lab Results & Prior Testing',
+    subtitle: 'If you have had any blood work or imaging, select anything that applies.',
+    symptoms: [
+      'Told your testosterone is high',
+      'Told your AMH is elevated',
+      'Irregular thyroid results (TSH)',
+      'Insulin resistance flagged by a doctor',
+      'Abnormal cholesterol or triglycerides',
+      'Low vitamin D',
+      'High LH relative to FSH',
+      'Told your estrogen is imbalanced',
+      'Borderline or pre-diabetic reading',
+      'Ultrasound showed many small follicles',
     ],
   },
 ]
@@ -210,66 +373,77 @@ export default function Symptoms({ showToast, onNavigate }) {
       </p>
 
       {/* ── Progress indicator ── */}
-      <div style={{ position: 'relative', marginBottom: 36 }}>
-        {/* Track */}
+      <div style={{ marginBottom: 28 }}>
+        {/* Label row */}
         <div style={{
-          position: 'absolute',
-          top: 13,
-          left: 'calc(12.5%)',
-          right: 'calc(12.5%)',
-          height: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          marginBottom: 10,
+        }}>
+          <span style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: 'var(--text)',
+            fontFamily: HEAD_FONT,
+          }}>
+            {SLIDES[slide].title}
+          </span>
+          <span style={{
+            fontSize: 12,
+            color: 'var(--muted)',
+            fontWeight: 500,
+          }}>
+            {slide + 1} of {SLIDES.length}
+          </span>
+        </div>
+
+        {/* Gradient fill bar */}
+        <div style={{
+          height: 4,
           background: 'var(--border)',
-          borderRadius: 2,
+          borderRadius: 4,
+          marginBottom: 14,
+          overflow: 'hidden',
         }}>
           <div style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
             height: '100%',
-            width: `${(slide / (SLIDES.length - 1)) * 100}%`,
-            background: 'var(--lav-deep)',
-            borderRadius: 2,
+            width: `${((slide + 1) / SLIDES.length) * 100}%`,
+            background: 'linear-gradient(90deg, var(--lav-deep), var(--peach))',
+            borderRadius: 4,
             transition: 'width 0.35s ease',
           }} />
         </div>
 
-        {/* Dots + labels */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+        {/* Scrollable pill dots */}
+        <div style={{
+          display: 'flex',
+          gap: 5,
+          overflowX: 'auto',
+          paddingBottom: 2,
+          scrollbarWidth: 'none',
+        }}>
           {SLIDES.map((s, i) => (
-            <div
+            <button
               key={s.id}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
-            >
-              <div style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: i <= slide ? 'var(--lav-deep)' : 'var(--surface)',
-                border: `2px solid ${i <= slide ? 'var(--lav-deep)' : 'var(--border)'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 11,
-                fontWeight: 700,
-                color: i <= slide ? '#fff' : 'var(--muted)',
-                transition: 'all 0.25s ease',
-                boxShadow: i === slide ? '0 0 0 4px var(--lav-light)' : 'none',
-                zIndex: 1,
-              }}>
-                {i < slide ? '✓' : i + 1}
-              </div>
-              <div style={{
-                fontSize: 11,
-                fontWeight: i === slide ? 700 : 400,
-                color: i === slide ? 'var(--lav-deep)' : i < slide ? 'var(--muted)' : 'var(--faint)',
-                textAlign: 'center',
-                lineHeight: 1.3,
-                maxWidth: 56,
-                transition: 'color 0.2s ease',
-              }}>
-                {s.title}
-              </div>
-            </div>
+              onClick={() => setSlide(i)}
+              style={{
+                flexShrink: 0,
+                height: 6,
+                width: i === slide ? 28 : 10,
+                borderRadius: 99,
+                border: 'none',
+                background: i < slide
+                  ? 'var(--lav-mid)'
+                  : i === slide
+                    ? 'var(--lav-deep)'
+                    : 'var(--border)',
+                cursor: 'pointer',
+                padding: 0,
+                transition: 'width 0.25s ease, background 0.2s ease',
+              }}
+              aria-label={s.title}
+            />
           ))}
         </div>
       </div>
@@ -334,19 +508,19 @@ export default function Symptoms({ showToast, onNavigate }) {
                         key={sym}
                         onClick={() => toggle(sym)}
                         style={{
-                          padding: '9px 18px',
+                          padding: '10px 16px',
                           borderRadius: 99,
                           border: selected.has(sym)
                             ? '1.5px solid var(--lav-deep)'
                             : '1.5px solid var(--border)',
                           background: selected.has(sym) ? 'var(--lav-deep)' : 'var(--surface)',
                           color: selected.has(sym) ? '#fff' : 'var(--muted)',
-                          fontSize: 13,
+                          fontSize: 15,
                           fontWeight: selected.has(sym) ? 600 : 500,
                           fontFamily: PAGE_FONT,
                           cursor: 'pointer',
                           transition: 'all 0.15s ease',
-                          lineHeight: 1,
+                          lineHeight: 1.2,
                         }}
                       >
                         {sym}
